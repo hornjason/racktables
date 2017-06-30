@@ -1,0 +1,22 @@
+version: '2.1'
+services:
+  mariadb:
+    image: mariadb
+    environment:
+      - MYSQL_DATABASE=racktables
+      - MYSQL_USER=racktables
+      - MYSQL_PASSWORD=foobarbaz
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes_since_this_isnt_production
+  racktables:
+    build: .
+    #image: rack-new
+    links:
+      - mariadb
+    environment:
+      - DBHOST=mariadb
+      - DBNAME=racktables
+      - DBUSER=racktables
+      - DBPASS=foobarbaz
+    ports:
+      - 8000:80
+      - 9000:9000
