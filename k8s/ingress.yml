@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: app
+spec:
+  rules:
+  - host: racktables.foo.bar
+    http:
+      paths:
+      - backend:
+          serviceName: racktables
+          servicePort: 80
+        path: /

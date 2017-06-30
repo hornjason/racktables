@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: racktables-db
+  labels:
+    app: racktables
+    tier: backend
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+      targetPort: mariadb-port
+  selector:
+    app: racktables
+    tier: backend
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-pv-claim
+  labels:
+    app: racktables
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: racktables-db
+  labels:
+    app: racktables
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: racktables
+        tier: backend
+    spec:
+      containers:
+      - image: mariadb
+        name: racktables-db
+        env:
+          # $ kubectl create secret generic mysql-pass --from-file=password.txt
+          # make sure password.txt does not have a trailing newline
+        - name: MYSQL_DATABASE
+          value: "racktables"
+        - name: MYSQL_USER
+          value: "racktables"
+        - name: MYSQL_PASSWORD
+          value: "foobarbaz"
+        - name: MYSQL_ROOT_PASSWORD
+          value: "passw0rd"
+          #valueFrom:
+          #  secretKeyRef:
+          #    name: mysql-pass
+          #    key: .pass
+        ports:
+        - containerPort: 3306
+          name: mariadb-port
+        volumeMounts:
+        - name: mariadb-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mariadb-persistent-storage
+        persistentVolumeClaim:
+          claimName: mariadb-pv-claim

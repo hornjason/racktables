@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: racktables
+  labels:
+    app: racktables
+spec:
+  type: NodePort
+  externalIPs:
+    - 192.168.42.5
+    - 192.168.42.4
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: racktables
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: racktables
+  labels:
+    app: racktables
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: racktables
+    spec:
+      volumes:
+      - name: configmap-volume
+        configMap:
+          #name: racktablesnginx
+          name: nginxconf
+      containers:
+      - image: jasonhorn/racktables-docker
+        name: racktables
+        env:
+        - name: DBHOST
+          value: racktables-db
+        - name: DBNAME
+          value: "racktables"
+        - name: DBUSER
+          value: "racktables"
+        - name: DBPASS
+          value: "foobarbaz"
+        volumeMounts:
+        - name: configmap-volume
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          #valueFrom:
+          #  secretKeyRef:
+          #    name: mysql-pass
+          #    key: password.txt
