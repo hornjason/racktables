@@ -23,4 +23,5 @@ pipeline {
         sh "docker tag jasonhorn/node-example:latest badamsbb/node-example:v${env.BUILD_ID}"
       }
     }
+  }
 }
