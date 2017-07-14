@@ -31,6 +31,4 @@ pipeline {
         sh "docker service update node-example_server --image badamsbb/node-example:v${env.BUILD_ID}"
       }
     }
-    }
   }
-}
