@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image 'registry:5000/alpine'
+      image 'alpine'
     }
     
   }
