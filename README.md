@@ -8,3 +8,4 @@ docker-compose up
 ### Start by browsing to http://localhost/?module=installer&step=5
 Configuration
 Look at the env vars available in the Dockerfile and entrypoint.sh.
+
