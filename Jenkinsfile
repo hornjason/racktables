@@ -11,16 +11,15 @@ pipeline {
         checkout scm
       }
     }
-    stage ('Verify Tools'){
-      steps {
-          docker: { sh "docker -v" }
+  stage ('Verify Tools'){
+    steps {
+      docker: sh "docker -v" 
       }
     }
-
-    stage ('Build container') {
-      steps {
-        sh "docker build -t jasonhorn/node-example:latest ."
-        sh "docker tag jasonhorn/node-example:latest badamsbb/node-example:v${env.BUILD_ID}"
+  stage ('Build container') {
+    steps {
+      sh "docker build -t jasonhorn/node-example:latest ."
+      sh "docker tag jasonhorn/node-example:latest badamsbb/node-example:v${env.BUILD_ID}"
       }
     }
   }
