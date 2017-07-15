@@ -1,25 +1,14 @@
-pipeline { 
-  agent { 
-    node { 
-      label 'docker'
-    }
-  }
- 
-  stages {
-    stage ('Checkout Code') {
-      steps {
-        checkout scm
-      }
-    }
-  stage ('Verify Tools'){
-    steps {
-      docker: sh "docker -v" 
-      }
-    }
-  stage ('Build container') {
-    steps {
-      sh "docker build -t jasonhorn/node-example:latest ."
-      sh "docker tag jasonhorn/node-example:latest badamsbb/node-example:v${env.BUILD_ID}"
+podTemplate(label: 'docker',
+  containers: [containerTemplate(name: 'docker', image: 'docker:1.11', ttyEnabled: true, command: 'cat')],
+  volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')]
+  ) {
+
+  def image = "jenkinsci/jnlp-slave"
+  node('docker') {
+    stage('Build Docker image') {
+      git 'https://github.com/jenkinsci/docker-jnlp-slave.git'
+      container('docker') {
+        sh "docker build -t ${image} ."
       }
     }
   }
