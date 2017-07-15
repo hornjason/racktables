@@ -14,3 +14,5 @@ node {
       returnStdout: true
     ).trim()
   }
+}
+}
